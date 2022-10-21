@@ -198,36 +198,26 @@ def reco(voz):
         cidadestr = " ".join(cidade)
         return cidadestr
 
-    user_voice = voz
+    user_voice = voz.lower()
     if "ei" in user_voice:
-        if "Bom dia" in str(user_voice):
+        if "bom dia" in str(user_voice):
             print("Olá")
+            return "Olá! Bom dia!"
+
         elif "temperatura" in user_voice:
-            cidade = separa_maiusculo(str(user_voice))
+            cidade = separa_maiusculo(str(voz))
             print(temperatura(city(cidade)))
             return temperatura((city(cidade)))
+
         elif "graus" in user_voice:
-            cidade = separa_maiusculo(str(user_voice))
+            cidade = separa_maiusculo(str(voz))
             print(temperatura(city(cidade)))
-        elif "Chainsaw Man" in str(user_voice):
-            print("Fujima God simplesmente")
-        else:
-            pass
-    if "Ei" in user_voice:
-        if "Bom dia" in str(user_voice):
-            print("Olá")
-        elif "temperatura" in user_voice:
-            cidade = separa_maiusculo(str(user_voice))
-            print(temperatura(city(cidade)))
-        elif "graus" in user_voice:
-            cidade = separa_maiusculo(str(user_voice))
-            print(temperatura(city(cidade)))
-        elif "Chainsaw Man" in str(user_voice):
-            print("Fujima God simplesmente")
+            return temperatura((city(cidade)))
+
         elif "ouvir" in str(user_voice):
             musica = str(user_voice)
             url = pesquisa_musica(musica)
             webbrowser.open(url)
+            return "Certo! Abrindo o YouTube!"
         else:
             pass
-
