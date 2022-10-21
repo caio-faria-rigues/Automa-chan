@@ -8,6 +8,7 @@ from time import sleep
 r = sr.Recognizer()
 voice = ''
 
+
 def hear():
     global voice
     print("ready!")
@@ -17,16 +18,11 @@ def hear():
                 audio = r.listen(source)
 
                 voice = r.recognize_google(audio, language='pt')
-                print(f">>{voice}")
-                voice_function.Listener(voice)
+                # print(f">>{voice}")
+                # voice_function.Listener(voice)
 
-                automa_write.config(text=voice)
-                # automa_write.after(5000, hear)
             except:
                 pass
-
-
-
 
 
 root = Tk()
@@ -53,14 +49,13 @@ def recognizer():
     global voice
     while voice != "sair":
         # automa_write.config(text=voice)
-        voicestr = ''
-        voice_function.Listener(voice)
-        voicestr = voice if voicestr != voice else ''
+        # voice_function.Listener(voice)
         response = reco(voice)
         print(response) if voice is not None else print('')
         automa_write.config(text=response)
-        automa_hear.insert(END, voicestr + '\n') if voicestr != '' else None
-        voicestr = ''
+
+        automa_hear.insert(END, voice + '\n') if voice != '' else None
+        voice = ''
         sleep(1)
 
 
