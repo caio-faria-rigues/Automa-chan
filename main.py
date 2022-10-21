@@ -1,5 +1,4 @@
 from tkinter import *
-import voice_functions as voice_function
 from voice_functions import reco
 import threading
 import speech_recognition as sr
@@ -16,11 +15,7 @@ def hear():
         while voice != 'sair':
             try:
                 audio = r.listen(source)
-
                 voice = r.recognize_google(audio, language='pt')
-                # print(f">>{voice}")
-                # voice_function.Listener(voice)
-
             except:
                 pass
 
@@ -48,8 +43,6 @@ def recognizer():
     global automa_write
     global voice
     while voice != "sair":
-        # automa_write.config(text=voice)
-        # voice_function.Listener(voice)
         response = reco(voice)
         print(response) if voice is not None else print('')
         automa_write.config(text=response)
