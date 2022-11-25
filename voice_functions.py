@@ -2,51 +2,34 @@ import requests
 from bs4 import BeautifulSoup
 from googlesearch import search
 import webbrowser
+from functions import separa_maiusculo, temperatura, city, pesquisa_musica, pesquisa_questao
 
-maiusculas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S','T', 'U',
-              'V', 'W', 'X', 'Y', 'Z']
+
+materia = ''
+question = False
+materias = ['português', 'matemática', 'história']
 
 
 def reco(voz):
-    def city(cidade):
-        for resultado in search(f'"{cidade}" accuweather', stop=1):
-            citylink = resultado
-
-        return citylink
-
-    def temperatura(citylink):
-        url = str(citylink)
-        headers = {
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36"}
-
-        site = requests.get(url, headers=headers)
-        soup = BeautifulSoup(site.content, 'html.parser')
-        citytemp = soup.find('div', class_='temp').get_text()
-
-        return citytemp
-
-    def pesquisa_musica(musica):
-        for resultado in search(f'"{musica}" youtube', stop=1):
-            music = resultado
-
-        return music
-
-    def separa_maiusculo(frase):
-        cidade = []
-        lista = frase.split(" ")
-        for palavra in lista:
-            if palavra[0] in maiusculas:
-                cidade.append(palavra)
-        cidadestr = " ".join(cidade)
-        return cidadestr
+    global question, materia
 
     user_voice = voz.lower()
 
-    # reconhecimento
+    # |||||||||||||||||||||||||||||||||||||||||||||||reconhecimento||||||||||||||||||||||||||||||||||||||||||||||||||||
+    if question:
+        if "próxima" in user_voice:
+            return pesquisa_questao(materia)[0]
+        if "outra" in user_voice:
+            return pesquisa_questao(materia)[0]
+        if "obrigado" in user_voice:
+            question = False
+            return "De nada! Sempre que quiser estudar basta me chamar!"
+        if "resposta" in user_voice:
+            question = False
+            return pesquisa_questao(materia)[1]
 
     if "ei" in user_voice:
-        if "bom dia" in str(user_voice):
+        if "bom dia" in user_voice:
             print("Olá")
             return "Olá! Bom dia!"
 
@@ -67,5 +50,20 @@ def reco(voz):
             url = pesquisa_musica(musica)
             webbrowser.open(url)
             return "Certo! Abrindo o YouTube!"
+
+        elif "pesquise" in str(user_voice):
+            user_voice_search = user_voice[12].upper() + user_voice[13::]
+            url = f"www.google.com/search?q={user_voice_search}"
+            webbrowser.open(url)
+            return f"Pesquisando {user_voice[11::]} no Google"
+
+        elif "questão" in str(user_voice):
+            phrase_list = user_voice.split()
+            for word in phrase_list:
+                if word in materias:
+                    materia = word
+                    question = True
+                    return pesquisa_questao(materia)[0]
+            ### resolver isso depois
         else:
             pass
