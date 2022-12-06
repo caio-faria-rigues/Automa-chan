@@ -1,13 +1,15 @@
 from tkinter import *
 from tkinter import messagebox
-from voice_functions import reco
+from voice_functions import reco, verify_question
 import threading
 import speech_recognition as sr
 from time import sleep
 
 r = sr.Recognizer()
 voice = ''
+response = ''
 config_window = None
+question_window = None
 deb_num = 0
 debug_status = False
 reading = False
@@ -29,11 +31,16 @@ root = Tk()
 root.title("Automa-chan")
 root.minsize(1280, 720)
 root.maxsize(1280, 720)
+
 background_image = PhotoImage(
     file=r'C:\Users\Cliente\PycharmProjects\guppe\Projetos\Automa-chan alpha 2.0\src\background1.png')
+sprite_front_default = PhotoImage(
+    file=r'C:\Users\Cliente\PycharmProjects\guppe\Projetos\Automa-chan alpha 2.0\src\sprites\sprite_front_default.png')
+
 canvas1 = Canvas(root)
 canvas1.pack(fill="both", expand=True)
 canvas1.create_image(0, 0, image=background_image, anchor="nw")
+canvas1.create_image(350, 23, image=sprite_front_default, anchor='nw')
 
 automa_write = Label(root, text='', font=("Retro Gaming", 12), background="#e9d0d6")
 automa_write.place(y=550, x=18)
@@ -62,6 +69,26 @@ def open_config_window():
     config_window.minsize(720, 480)
     config_window.maxsize(720, 480)
     config_window.config(bg="#e9d0d6")
+
+
+def open_question_window():
+    global question_window, response
+
+    question_window.destroy() if question_window else None
+
+    while True:
+        if not question_window:
+            question_window = Toplevel(root)
+            question_window.title = "Ambiente de estudos"
+            question_window.minsize(720, 480)
+            question_window.maxsize(720, 480)
+            question_window.config(bg="#e9d0d6")
+            response_question = response[0]
+            reponse_answer = response[1]
+            question = Label(question_window, text=response_question, font=("Retro Gaming", 12), background="#e9d0d6")
+            question.place(y=0, x=0)
+        else:
+            pass
 
 
 config_button_image = PhotoImage(
@@ -108,11 +135,18 @@ threading.Thread(target=hear).start()
 
 
 def recognizer():
-    global automa_write, voice, debug_status, reading
+    global automa_write, voice, debug_status, reading, response
     while voice != "sair":
         response = reco(voice)
+        if str(type(response)) == "<class 'list'>":
+            response_question_command = response[2]
+            automa_write.config(text=response_question_command)
+        else:
+            automa_write.config(text=response)
         print(response) if voice is not None else print('')
-        automa_write.config(text=response)
+
+        if verify_question():
+            open_question_window()
 
         if debug_status:
             automa_hear.insert(END, voice + '\n') if voice != '' else None
