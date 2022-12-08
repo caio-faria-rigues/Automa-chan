@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 from googlesearch import search
-import webbrowser
 from random import shuffle
+import operator
 
 maiusculas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
               'V', 'W', 'X', 'Y', 'Z']
@@ -99,7 +99,10 @@ def pesquisa_questao(materia):
     index = index_list.pop()
 
     # pega a caixa da matéria
-    grid = grids[index]
+    try:
+        grid = grids[index]
+    except:
+        raise Exception('SearchError: cannot find website')
 
     # pega o link da matéria
     str_link = str(grid.find('a', href=True))
@@ -135,3 +138,20 @@ def pesquisa_questao(materia):
 
     quest = spaces(quest_beta)
     return [str(quest), ans]
+
+
+def pega_operador(string):
+    return{
+        '+': operator.add,
+        '-': operator.sub,
+        'x': operator.mul,
+        'dividido por': operator.__truediv__,
+        '/': operator.__truediv__,
+        'elevado a': operator.pow,
+        'elevado': operator.pow
+    }[string]
+
+
+def calcular(numero1, operador, numero2):
+    num1, num2 = int(numero1), int(numero2)
+    return pega_operador(operador)(num1, num2)
