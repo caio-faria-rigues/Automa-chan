@@ -4,6 +4,7 @@ from voice_functions import reco, verify_question
 import threading
 import speech_recognition as sr
 from time import sleep
+from win32com.client import Dispatch
 
 r = sr.Recognizer()
 voice = ''
@@ -13,6 +14,8 @@ question_window = None
 deb_num = 0
 debug_status = False
 reading = False
+
+speak = Dispatch("SAPI.SpVoice").Speak
 
 
 def hear():
@@ -73,20 +76,42 @@ def open_config_window():
 
 def open_question_window():
     global question_window, response
+    contador = 0
+    breaker_ = False
 
     question_window.destroy() if question_window else None
+
+    def breaker():
+        breaker_ = True
 
     while True:
         if not question_window:
             question_window = Toplevel(root)
             question_window.title = "Ambiente de estudos"
-            question_window.minsize(720, 480)
-            question_window.maxsize(720, 480)
+            question_window.minsize(1040, 585)
+            question_window.maxsize(1280, 720)
             question_window.config(bg="#e9d0d6")
             response_question = response[0]
+            response_question_charlist = list(response_question)
+
+            segments = round(len(response_question_charlist) / 100)
+
+            while contador != segments:
+                response_question_charlist.insert(contador * 100, '\n')
+                contador += 1
+
+            response_question = ''.join(response_question_charlist)
+            print(response_question)
+
             reponse_answer = response[1]
-            question = Label(question_window, text=response_question, font=("Retro Gaming", 12), background="#e9d0d6")
+            question = Label(
+            question_window,
+            text=response_question, font=("Retro Gaming", 12), background="#e9d0d6", justify='left')
             question.place(y=0, x=0)
+            speak(response_question) if response is not None else None
+            question_window.protocol("WM_DELETE_WINDOW", breaker)
+            if breaker_:
+                break
         else:
             pass
 
@@ -140,9 +165,11 @@ def recognizer():
         response = reco(voice)
         if str(type(response)) == "<class 'list'>":
             response_question_command = response[2]
+            speak(response_question_command) if response is not None else None
             automa_write.config(text=response_question_command)
         else:
             automa_write.config(text=response)
+            speak(response) if response is not None else None
         print(response) if voice is not None else print('')
 
         if verify_question():
