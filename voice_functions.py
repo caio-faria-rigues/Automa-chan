@@ -1,12 +1,16 @@
 import webbrowser
-from functions import separa_maiusculo, temperatura, city, pesquisa_musica, pesquisa_questao
-
+from functions import separa_maiusculo, temperatura, city, pesquisa_musica, pesquisa_questao, calcular
+from word2number import w2n
+from py_trans import PyTranslator
+from AppOpener import run
+from datetime import datetime
 
 materia = ''
 question_bool = False
-materias = ['português', 'matemática', 'história']
+materias = ['linguagens', 'matemática', 'história', 'biologia', 'quimica', 'fisica', ]
 question = []
 humor = ''
+pytranslator = PyTranslator(provider="google")
 
 
 def reco(voz):
@@ -15,20 +19,6 @@ def reco(voz):
     user_voice = voz.lower()
 
     # |||||||||||||||||||||||||||||||||||||||||||||||reconhecimento||||||||||||||||||||||||||||||||||||||||||||||||||||
-    if question_bool:
-
-        if "próxima" in user_voice:
-            return pesquisa_questao(materia)[0]
-        if "outra" in user_voice:
-            return pesquisa_questao(materia)[0]
-        if "obrigado" in user_voice:
-            question_bool = False
-            return "De nada! Sempre que quiser estudar basta me chamar!"
-        if "resposta" in user_voice:
-            question_bool = False
-            return pesquisa_questao(materia)[1]
-        else:
-            return question[0]
 
     if "ei" in user_voice:
         if "bom dia" in user_voice:
@@ -44,8 +34,10 @@ def reco(voz):
 
         elif "graus" in user_voice:
             cidade = separa_maiusculo(str(voz))
+            cidade2 = cidade.replace("Ei", '')
             print(temperatura(city(cidade)))
-            return temperatura((city(cidade)))
+            temp = temperatura((city(cidade)))
+            return f"Em {cidade2} faz {temp}!"
 
         elif "ouvir" in str(user_voice):
             musica = str(user_voice)
@@ -69,6 +61,37 @@ def reco(voz):
                     question.append('Abrindo ambiente de estudos...')
                     return question
             ### resolver isso depois
+
+        elif "quanto" in str(user_voice):
+            operacao = str(user_voice[11::])
+            operator_list = operacao.split()
+            num1 = operator_list[0]
+            num2 = operator_list[len(operator_list) - 1]
+            del(operator_list[0])
+            del(operator_list[len(operator_list) - 1])
+            operador = operator_list[0]
+            return str(calcular(num1, operador, num2))
+
+        elif "abrir" in str(user_voice):
+            run(str(user_voice[9::]))
+            return f"Abrindo {str(user_voice[9::])}"
+
+        elif "horas" in str(user_voice):
+            now = datetime.now()
+            return f"São {now.hour} horas e {now.minute} minutos"
+
+        elif "hoje" in str(user_voice):
+            now = datetime.now()
+            return f"Hoje é dia {now.day} do mês {now.month} de {now.year}"
+
+        elif "futebol" in str(user_voice):
+            return "Há, todo mundo tenta, mas só o Brasil é penta (por enquanto)"
+
+        elif "jogador" in str(user_voice):
+            return "Com apenas 21 anos, Takefusa Kubo se tornou o jogador mais jovem com nome de figura geométrica\n" \
+                   + " adisputar uma Copa do Mundo, superando o argentino Redondo que estreou \ncom 25 anos em 1994 e" \
+                   + "o colombiano Cuadrado, que estreou com 26 em 2014."
+
         elif "sword" in str(user_voice):
             webbrowser.open("https://www.youtube.com/watch?v=uWmhG_LHxDw&t=46s&ab_channel=NeroNightcore")
             return """I am The bone of my sword
